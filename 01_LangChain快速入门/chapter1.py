@@ -44,7 +44,7 @@ chat = ChatOpenAI(model="gpt-4",
                   max_tokens=60)
 
 messages = [
-    SystemMessage(content="你是一个很棒的智能助手"),
+    SystemMessage(content="你是一个很棒的智能助手，并且回答很简洁"),
     HumanMessage(content="请给我的花店起个名，并翻译为英文")
 ]
 response = chat(messages)
