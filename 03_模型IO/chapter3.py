@@ -1,4 +1,4 @@
-# 代码描述了如何让响应对代码友好：输出解析器
+# 代码描述了如何让响应对代码友好：输出解析器，这里只是简单定义了JSON格式，更强大的定义在第7章
 from langchain.prompts import PromptTemplate
 from langchain.llms.openai import OpenAI
 from langchain.output_parsers import StructuredOutputParser, ResponseSchema
@@ -11,6 +11,8 @@ template: str = """您是一位专业的鲜花店文案撰写员\n
 # 响应解析器，将来会按指定格式解析响应，同时可以提供对该格式的描述用于模板
 output_parser: StructuredOutputParser = StructuredOutputParser.from_response_schemas(
     response_schemas=[
+        ResponseSchema(name="flower", description="鲜花种类"),
+        ResponseSchema(name="price", description="鲜花价格", type='int'),
         ResponseSchema(name="description", description="鲜花的描述文案"),
         ResponseSchema(name="reason", description="问什么要这样写这个文案"),
     ],
@@ -36,8 +38,8 @@ for f, p in zip(flowers, prices):
     _output: str = mode(_input)
     print(f'output={_output}')
     parsed_output: dict = output_parser.parse(_output)
-    parsed_output['flower'] = f
-    parsed_output['price'] = p
+    # parsed_output['flower'] = f
+    # parsed_output['price'] = p
     df.loc[len(df)] = parsed_output
 
 df.to_csv("flowers_with_descriptions.csv", index=False)

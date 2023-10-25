@@ -87,8 +87,8 @@ posthog==3.0.2
 protobuf==4.24.4
 pulsar-client==3.3.0
 pycparser==2.21
-pydantic==2.4.2
-pydantic_core==2.10.1
+pydantic==1.10.13
+pydantic_core==2.11.0
 Pygments==2.16.1
 pygtrie==2.5.0
 PyJWT==2.8.0
