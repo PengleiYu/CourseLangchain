@@ -15,4 +15,4 @@ if __name__ == '__main__':
     print(person_info)
 
     result = generate_letter(person_info)
-    print(result)
+    print(f'result={result}')

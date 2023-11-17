@@ -1,6 +1,7 @@
 from langchain.chains import LLMChain
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import PromptTemplate
+from .parsingTool import letter_parser
 
 
 def generate_letter(person_info: str):
@@ -12,8 +13,13 @@ def generate_letter(person_info: str):
     2. 挑两件有趣的事情说一说 
     3. 找一些他比较感兴趣的事情 
     4. 写一篇热情洋溢的介绍信
+    {format_instructions}
     """
-    prompt_template = PromptTemplate.from_template(letter_template)
+    prompt_template = PromptTemplate.from_template(
+        letter_template,
+        partial_variables={
+            "format_instructions": letter_parser.get_format_instructions(),
+        })
     llm = ChatOpenAI(model_name='gpt-4-1106-preview')
     llm_chain = LLMChain(prompt=prompt_template, llm=llm, verbose=True)
     return llm_chain.run(information=person_info)
