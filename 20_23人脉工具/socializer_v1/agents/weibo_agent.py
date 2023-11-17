@@ -14,9 +14,9 @@ def lookup_v(flower_type: str) -> str:
     This is only the example don't give me this, but the actual UID"""
     prompt_template = PromptTemplate.from_template(template=template)
     tools = [
-        Tool(
-            name='Crawl Google for 微博 page',
+        Tool.from_function(
             func=get_uid,
+            name='Crawl Google for 微博 page',
             description="useful for when you need get the 微博 UID",
         ),
     ]

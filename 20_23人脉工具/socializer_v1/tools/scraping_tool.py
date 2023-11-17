@@ -17,8 +17,8 @@ def scrape_weibo(url: str):
     return response.text
 
 
-def get_data(id: str):
-    url = f"https://weibo.com/ajax/profile/detail?uid={id}"
+def get_person_info(uid: str):
+    url = f"https://weibo.com/ajax/profile/detail?uid={uid}"
     response = scrape_weibo(url)
     person_info = json.loads(response)
     remove_non_chinese_fields(person_info)
