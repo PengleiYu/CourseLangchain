@@ -5,6 +5,7 @@ from .general_tool import remove_non_chinese_fields
 
 
 def scrape_weibo(url: str):
+    print(f'scrape weibo: {url}')
     headers = {
         "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/89.0.4389.82 Safari/537.36",
         "Referer": "https://weibo.com",

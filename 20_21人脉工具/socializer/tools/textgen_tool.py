@@ -1,10 +1,10 @@
 from langchain.chains import LLMChain
 from langchain.chat_models import ChatOpenAI
 from langchain.prompts import PromptTemplate
-from .parsingTool import letter_parser
+from .parsingTool import letter_parser, TextParsing
 
 
-def generate_letter(person_info: str):
+def generate_letter(person_info: str) -> TextParsing:
     letter_template = """
     下面是这个人的微博信息
     {information}
@@ -22,4 +22,8 @@ def generate_letter(person_info: str):
         })
     llm = ChatOpenAI(model_name='gpt-4-1106-preview')
     llm_chain = LLMChain(prompt=prompt_template, llm=llm, verbose=True)
-    return llm_chain.run(information=person_info)
+    response = llm_chain.run(information=person_info)
+    print('llm response=', response)
+    parse_result = letter_parser.parse(response)
+    print('parse_result = ', parse_result)
+    return parse_result

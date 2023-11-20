@@ -17,4 +17,4 @@ class TextParsing(BaseModel):
         }
 
 
-letter_parser = PydanticOutputParser(pydantic_object=TextParsing)
+letter_parser: PydanticOutputParser[TextParsing] = PydanticOutputParser(pydantic_object=TextParsing)
