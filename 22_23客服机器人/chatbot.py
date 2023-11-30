@@ -1,4 +1,7 @@
+# 聊天机器人，支持streamlet、gradio部署
 import os
+import streamlit as st
+import gradio as gr
 from typing import Optional
 
 from langchain.chains import LLMChain, ConversationalRetrievalChain
@@ -55,6 +58,7 @@ class ChatbotWithRetrieval:
         base_dir = doc_dir
         documents = []
         loader: Optional[BaseLoader] = None
+        print(f"开始读取文件夹:{os.path.abspath(base_dir)}")
         for file in os.listdir(base_dir):
             file_path = os.path.join(base_dir, file)
             if file.endswith('.pdf'):
@@ -65,29 +69,36 @@ class ChatbotWithRetrieval:
                 loader = TextLoader(file_path)
             if loader is not None:
                 documents.extend(loader.load())
-
+        print("开始分割文档")
         text_splitter = RecursiveCharacterTextSplitter(chunk_size=200, chunk_overlap=0)
         all_splits = text_splitter.split_documents(documents)
 
+        print("开始创建矢量DB")
         self.vectorstore = Qdrant.from_documents(
             documents=all_splits,
             embedding=OpenAIEmbeddings(),
             location=":memory:",
             collection_name="my_documents",
         )
+        print("开始创建llm")
         self.llm = ChatOpenAI(verbose=True, model_name='gpt-4-1106-preview', )
+        print("开始创建memory")
         self.memory = ConversationSummaryMemory(
             llm=self.llm,
             memory_key="chat_history",
             return_messages=True,
         )
-
+        print("开始创建检索对象")
         retriever = self.vectorstore.as_retriever()
+        print("开始创建会话检索链")
         self.qa = ConversationalRetrievalChain.from_llm(
             llm=self.llm,
             retriever=retriever,
             memory=self.memory,
         )
+
+        self.conversation_history = ""
+        print("初始化完成")
 
     def chat_loop(self):
         print("Chatbot 已启动! 输入'exit'来退出程序。")
@@ -102,8 +113,37 @@ class ChatbotWithRetrieval:
             # self.messages.append(response)
             print(f'ChatBot: {response["answer"]}')
 
+    def get_response(self, user_input: str):
+        response = self.qa(user_input)
+        self.conversation_history += f"你:{user_input}\nChatbot:{response['answer']}\n"
+        return self.conversation_history
+
+
+def main_stream_let():
+    st.title('易速鲜花聊天客服')
+    if 'bot' not in st.session_state:
+        folder = "22_23客服机器人/OneFlower"
+        st.session_state.bot = ChatbotWithRetrieval(folder)
+    user_input = st.text_input('请输入你的问题')
+    if user_input:
+        response = st.session_state.bot.qa(user_input)
+        st.write(f'Chatbot: {response["answer"]}')
+
+
+def main_gradio():
+    folder = "22_23客服机器人/OneFlower"
+    bot = ChatbotWithRetrieval(folder)
+    interface = gr.Interface(
+        fn=bot.get_response,
+        inputs='text',
+        outputs='text',
+        live=False,
+        title='易速鲜花聊天客服',
+        description='请输入问题，然后点击提交',
+    )
+    interface.launch()
+
 
 if __name__ == '__main__':
-    folder = "OneFlower"
-    bot = ChatbotWithRetrieval(folder)
-    bot.chat_loop()
+    # main_stream_let()
+    main_gradio()
