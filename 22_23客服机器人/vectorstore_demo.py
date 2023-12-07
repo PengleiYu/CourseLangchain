@@ -1,6 +1,7 @@
 import os
 from typing import Optional, List
 
+from langchain.chains import MultiRetrievalQAChain
 from langchain.document_loaders import TextLoader, PyPDFLoader, Docx2txtLoader
 from langchain.document_loaders.base import BaseLoader
 from langchain.embeddings import OpenAIEmbeddings
@@ -59,3 +60,5 @@ if not qdrant:
 result: list[Document] = qdrant.similarity_search('总经理说了什么')
 for d in result:
     print(d)
+
+MultiRetrievalQAChain()

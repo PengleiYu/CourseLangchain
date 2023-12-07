@@ -50,7 +50,7 @@ router_prompt = PromptTemplate.from_template(
     template=router_template,
     output_parser=RouterOutputParser(),
 )
-router_chain = LLMRouterChain.from_llm(llm=llm, prompt=router_prompt, verbose=True)
+router_chain = LLMRouterChain(llm_chain=LLMChain(llm=llm, prompt=router_prompt, verbose=True))
 
 from langchain.chains import ConversationChain
 
@@ -67,11 +67,16 @@ from langchain.chains.router import MultiPromptChain
 """
 4,最终的多模板链
 """
+
+from utils.callback_handler import MyBaseCallbackHandler
+
 chain = MultiPromptChain(router_chain=router_chain,
                          destination_chains=destination_chains,
                          default_chain=default_chain,
-                         verbose=True, )
-
-# print(chain.run("如何为玫瑰浇水？"))
-# print(chain.run("如何为婚礼场地装饰花朵？"))
-print(chain.run("如何考入哈佛大学？"))
+                         verbose=True,
+                         # callbacks=[MyBaseCallbackHandler()],
+                         )
+# 注意：callbacks传入run函数和传入构造函数是不同的。run方法中会作用于所有遇到的chain，而构造方法中仅作用于该chain
+print(chain.run("如何为玫瑰浇水？", callbacks=[MyBaseCallbackHandler()]))
+print(chain.run("如何为婚礼场地装饰花朵？"))
+# print(chain.run("如何考入哈佛大学？"))
